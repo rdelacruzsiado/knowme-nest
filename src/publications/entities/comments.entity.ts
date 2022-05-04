@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 
 import { Publication } from './publications.entity';
+import { User } from '../../users/entities/users.entity';
 
 @Entity({ name: 'comments' })
 export class Comment {
@@ -42,4 +43,8 @@ export class Comment {
   @ManyToOne(() => Publication, (publication) => publication.comments)
   @JoinColumn({ name: 'publication_id' })
   publication: Publication;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

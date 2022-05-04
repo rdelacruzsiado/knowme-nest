@@ -2,6 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -10,6 +12,7 @@ import {
 import { Comment } from './comments.entity';
 import { Like } from './likes.entity';
 import { Photo } from './photos.entity';
+import { User } from '../../users/entities/users.entity';
 
 @Entity({ name: 'publications' })
 export class Publication {
@@ -48,4 +51,8 @@ export class Publication {
 
   @OneToMany(() => Photo, (photo) => photo)
   photos: Photo[];
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

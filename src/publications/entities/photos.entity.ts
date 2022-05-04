@@ -7,7 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
 import { Publication } from './publications.entity';
+import { User } from '../../users/entities/users.entity';
 
 @Entity({ name: 'photos' })
 export class Photo {
@@ -41,4 +43,8 @@ export class Photo {
   @ManyToOne(() => Publication, (publication) => publication.photos)
   @JoinColumn({ name: 'publication_id' })
   publication: Publication;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }
