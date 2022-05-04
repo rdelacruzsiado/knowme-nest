@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 1G
+        reservations:
+          memory: 0M
+    restart: unless-stopped
+    ports:
+      - '$PORT:$PORT'
+    environment:
+      - TZ=$TIME_ZONE
+    volumes:
+      - .:/srv/app
+      - /srv/app/node_modules
+    links:
+      - postgres
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=$TYPEORM_DATABASE
+      - POSTGRES_USER=$TYPEORM_USERNAME
+      - POSTGRES_PASSWORD=$TYPEORM_PASSWORD
+    ports:
+      - '$TYPEORM_PORT:$TYPEORM_PORT'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
