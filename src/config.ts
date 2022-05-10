@@ -8,4 +8,5 @@ export default registerAs('config', () => ({
     user: process.env.TYPEORM_USERNAME,
     password: process.env.TYPEORM_PASSWORD,
   },
+  apiKey: process.env.API_KEY,
 }));

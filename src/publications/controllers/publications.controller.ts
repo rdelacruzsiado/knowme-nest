@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 
 import { PublicationsService } from '../services/publications.service';
@@ -14,12 +15,16 @@ import {
   CreatePublicationDto,
   UpdatePublicationDto,
 } from '../dtos/publications.dto';
+import { Public } from '../../auth/decorators/public.decorator';
+import { ApiKeyGuard } from '../../auth/guards/api-key.guard';
 
+@UseGuards(ApiKeyGuard)
 @Controller('publications')
 export class PublicationsController {
   constructor(private publicationsService: PublicationsService) {}
 
   @Get()
+  @Public()
   async findAll() {
     return await this.publicationsService.findAll();
   }
