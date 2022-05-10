@@ -8,12 +8,14 @@ import {
   UpdatePublicationDto,
 } from '../dtos/publications.dto';
 import { UsersService } from 'src/users/services/users.service';
+import { Photo } from '../entities/photos.entity';
 
 @Injectable()
 export class PublicationsService {
   constructor(
     @InjectRepository(Publication)
     private publicationRepo: Repository<Publication>,
+    @InjectRepository(Photo) private photoRepo: Repository<Photo>,
     private usersService: UsersService,
   ) {}
 
@@ -30,10 +32,17 @@ export class PublicationsService {
   }
 
   async create(data: CreatePublicationDto) {
-    const user = await this.usersService.findOne(data.userId);
     const newPublication = this.publicationRepo.create(data);
+    const user = await this.usersService.findOne(data.userId);
     newPublication.user = user;
-    return await this.publicationRepo.save(newPublication);
+    await this.publicationRepo.save(newPublication);
+    for (const photo of data.photos) {
+      photo.publication = newPublication;
+      photo.user = user;
+      const newPhoto = this.photoRepo.create(photo);
+      await this.photoRepo.save(newPhoto);
+    }
+    return newPublication;
   }
 
   async update(id: number, changes: UpdatePublicationDto) {
