@@ -7,7 +7,7 @@ import { Photo } from './entities/photos.entity';
 import { Publication } from './entities/publications.entity';
 import { PublicationsController } from './controllers/publications.controller';
 import { PublicationsService } from './services/publications.service';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [

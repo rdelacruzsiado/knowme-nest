@@ -7,8 +7,8 @@ import {
   CreatePublicationDto,
   UpdatePublicationDto,
 } from '../dtos/publications.dto';
-import { UsersService } from 'src/users/services/users.service';
 import { Photo } from '../entities/photos.entity';
+import { UsersService } from '../../users/services/users.service';
 
 @Injectable()
 export class PublicationsService {
