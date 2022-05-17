@@ -17,7 +17,7 @@ import config from './config';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: `.env.${process.env.NODE_ENV}`,
       load: [config],
       isGlobal: true,
     }),
