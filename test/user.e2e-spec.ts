@@ -133,8 +133,6 @@ describe('Users', () => {
       const user = {
         name: 'Leandro',
         lastName: 'Martinez',
-        email: 'rdelacruz@example.com',
-        password: 'demo',
       } as User;
 
       await request(app.getHttpServer())
