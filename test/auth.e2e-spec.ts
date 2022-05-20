@@ -5,10 +5,12 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { User } from '../src/users/entities/users.entity';
 import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard';
-import { getConnection } from 'typeorm';
+import { clearDB } from './test.helper';
+import { UsersService } from '../src/users/services/users.service';
 
 describe('Authentication system (e2e)', () => {
   let app: INestApplication;
+  let userService: UsersService;
   const userTest = {
     name: 'Robinson',
     lastName: 'De La Cruz',
@@ -30,13 +32,15 @@ describe('Authentication system (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    userService = moduleFixture.get<UsersService>(UsersService);
+  });
+
+  beforeEach(async () => {
+    await clearDB();
+    await userService.create(userTest);
   });
 
   it('handles a login request', async () => {
-    await request(app.getHttpServer())
-      .post('/users')
-      .send(userTest)
-      .expect(201);
     return await request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: userTest.email, password: userTest.password } as User)
@@ -49,13 +53,7 @@ describe('Authentication system (e2e)', () => {
   });
 
   afterAll(async () => {
-    const entities = getConnection().entityMetadatas;
-    for (const entity of entities) {
-      const repository = getConnection().getRepository(entity.name);
-      await repository.query(
-        `TRUNCATE ${entity.tableName} RESTART IDENTITY CASCADE;`,
-      );
-    }
+    await clearDB();
     await app.close();
   });
 });
