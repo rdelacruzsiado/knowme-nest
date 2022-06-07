@@ -8,7 +8,11 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 import { PublicationsService } from '../services/publications.service';
 import {
@@ -30,13 +34,23 @@ export class PublicationsController {
   }
 
   @Get('/:id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return await this.publicationsService.findOne(id);
   }
 
   @Post()
-  async create(@Body() payload: CreatePublicationDto) {
-    return await this.publicationsService.create(payload);
+  @UseInterceptors(
+    FilesInterceptor('photos', 20, {
+      storage: diskStorage({
+        destination: './files',
+      }),
+    }),
+  )
+  async create(
+    @Body() payload: CreatePublicationDto,
+    @UploadedFiles() photos: Array<Express.Multer.File>,
+  ) {
+    return await this.publicationsService.create(payload, photos);
   }
 
   @Put('/:id')

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -31,12 +35,16 @@ export class PublicationsService {
     return publication;
   }
 
-  async create(data: CreatePublicationDto) {
+  async create(data: CreatePublicationDto, photos: Array<Express.Multer.File>) {
+    if (photos.length === 0) {
+      throw new BadRequestException('Photos should not be empty');
+    }
     const newPublication = this.publicationRepo.create(data);
     const user = await this.usersService.findOne(data.userId);
     newPublication.user = user;
     await this.publicationRepo.save(newPublication);
-    for (const photo of data.photos) {
+    for (const file of photos) {
+      const photo = { route: file.path } as Photo;
       photo.publication = newPublication;
       photo.user = user;
       const newPhoto = this.photoRepo.create(photo);

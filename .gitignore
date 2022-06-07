@@ -214,4 +214,7 @@ dist
 # Ignore code-workspaces
 *.code-workspace
 
+# Upload files
+files/
+
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,visualstudiocode

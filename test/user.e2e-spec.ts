@@ -49,16 +49,18 @@ describe('Users', () => {
     userService = moduleFixture.get<UsersService>(UsersService);
   });
 
-  beforeEach(async () => {
-    await clearDB();
+  afterAll(async () => {
+    await app.close();
+  });
 
+  beforeEach(async () => {
     for (const user of initialUsers) {
       await userService.create(user as User);
     }
   });
 
-  afterAll(async () => {
-    await app.close();
+  afterEach(async () => {
+    await clearDB();
   });
 
   describe('Test GET /users/:id', () => {
