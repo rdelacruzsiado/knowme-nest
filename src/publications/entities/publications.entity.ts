@@ -46,10 +46,10 @@ export class Publication {
   @OneToMany(() => Comment, (comment) => comment.publication)
   comments: Comment[];
 
-  @OneToMany(() => Like, (like) => like)
+  @OneToMany(() => Like, (like) => like.publication)
   likes: Like[];
 
-  @OneToMany(() => Photo, (photo) => photo)
+  @OneToMany(() => Photo, (photo) => photo.publication)
   photos: Photo[];
 
   @ManyToOne(() => User)
