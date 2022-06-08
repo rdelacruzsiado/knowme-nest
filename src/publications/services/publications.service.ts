@@ -24,12 +24,16 @@ export class PublicationsService {
   ) {}
 
   async findAll() {
-    return await this.publicationRepo.find({ relations: ['user'] });
+    return await this.publicationRepo.find({
+      relations: ['user'],
+      where: { state: 1 },
+    });
   }
 
   async findOne(id: number) {
     const publication = await this.publicationRepo.findOne(id, {
       relations: ['user', 'photos', 'likes', 'comments'],
+      where: { state: 1 },
     });
     if (!publication) {
       throw new NotFoundException(`Publication #${id} not found.`);

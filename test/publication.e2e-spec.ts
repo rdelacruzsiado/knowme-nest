@@ -8,7 +8,10 @@ import { clearDB } from './test.helper';
 import { UsersService } from '../src/users/services/users.service';
 import { ApiKeyGuard } from '../src/auth/guards/api-key.guard';
 import { PublicationsService } from '../src/publications/services/publications.service';
-import { CreatePublicationDto } from '../src/publications/dtos/publications.dto';
+import {
+  CreatePublicationDto,
+  UpdatePublicationDto,
+} from '../src/publications/dtos/publications.dto';
 
 describe('Publications', () => {
   let app: INestApplication;
@@ -111,6 +114,50 @@ describe('Publications', () => {
         .field('description', 'New publication')
         .field('userId', 1)
         .expect(400);
+    });
+  });
+
+  describe('Test PUT /publications', () => {
+    it('Update description of a publication', async () => {
+      const publicationChanges = {
+        description: 'Description updated',
+      } as UpdatePublicationDto;
+      await request(app.getHttpServer())
+        .put('/publications/1')
+        .send(publicationChanges)
+        .expect(200);
+      const publication = await publicationsService.findOne(1);
+      expect(publication.description).toEqual(publicationChanges.description);
+      expect(publication.createdAt).not.toEqual(publication.updateAt);
+    });
+
+    it('Publication not found', async () => {
+      await request(app.getHttpServer())
+        .put('/publications/100')
+        .send({})
+        .expect(404);
+    });
+
+    it('Publication without id', async () => {
+      await request(app.getHttpServer()).put('/publications').expect(404);
+    });
+  });
+
+  describe('Test DELETE /publications', () => {
+    it('Delete publication successfully', async () => {
+      await request(app.getHttpServer()).delete('/publications/1').expect(200);
+      const publications = await publicationsService.findAll();
+      expect(publications).toHaveLength(initialPublications.length - 1);
+    });
+
+    it('Publication not found', async () => {
+      await request(app.getHttpServer())
+        .delete('/publications/100')
+        .expect(404);
+    });
+
+    it("It's not possible without an ID", async () => {
+      await request(app.getHttpServer()).delete('/publications').expect(404);
     });
   });
 });
