@@ -11,6 +11,7 @@ import {
   CreatePublicationDto,
   UpdatePublicationDto,
 } from '../dtos/publications.dto';
+import { CreatePhotoDto } from '../dtos/photos.dto';
 import { Photo } from '../entities/photos.entity';
 import { UsersService } from '../../users/services/users.service';
 
@@ -41,22 +42,31 @@ export class PublicationsService {
     return publication;
   }
 
-  async create(data: CreatePublicationDto, photos: Array<Express.Multer.File>) {
-    if (photos.length === 0) {
-      throw new BadRequestException('Photos should not be empty');
-    }
+  async create(data: CreatePublicationDto) {
     const newPublication = this.publicationRepo.create(data);
     const user = await this.usersService.findOne(data.userId);
     newPublication.user = user;
     await this.publicationRepo.save(newPublication);
+    return newPublication;
+  }
+
+  async uploadPhotos(data: CreatePhotoDto, photos: Array<Express.Multer.File>) {
+    if (photos.length === 0) {
+      throw new BadRequestException('Photos should not be empty');
+    }
+
+    const publication = await this.publicationRepo.findOne(data.publicationId);
+    const user = await this.usersService.findOne(data.userId);
+
     for (const file of photos) {
       const photo = { route: file.path } as Photo;
-      photo.publication = newPublication;
+      photo.publication = publication;
       photo.user = user;
       const newPhoto = this.photoRepo.create(photo);
       await this.photoRepo.save(newPhoto);
     }
-    return newPublication;
+
+    return true;
   }
 
   async update(id: number, changes: UpdatePublicationDto) {

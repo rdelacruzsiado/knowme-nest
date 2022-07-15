@@ -19,6 +19,7 @@ import {
   CreatePublicationDto,
   UpdatePublicationDto,
 } from '../dtos/publications.dto';
+import { CreatePhotoDto } from '../dtos/photos.dto';
 import { Public } from '../../auth/decorators/public.decorator';
 import { ApiKeyGuard } from '../../auth/guards/api-key.guard';
 
@@ -39,6 +40,11 @@ export class PublicationsController {
   }
 
   @Post()
+  async create(@Body() payload: CreatePublicationDto) {
+    return await this.publicationsService.create(payload);
+  }
+
+  @Post('/upload-photos')
   @UseInterceptors(
     FilesInterceptor('photos', 20, {
       storage: diskStorage({
@@ -46,11 +52,11 @@ export class PublicationsController {
       }),
     }),
   )
-  async create(
-    @Body() payload: CreatePublicationDto,
+  async uploadPhotos(
+    @Body() payload: CreatePhotoDto,
     @UploadedFiles() photos: Array<Express.Multer.File>,
   ) {
-    return await this.publicationsService.create(payload, photos);
+    return await this.publicationsService.uploadPhotos(payload, photos);
   }
 
   @Put('/:id')

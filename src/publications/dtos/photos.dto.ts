@@ -1,16 +1,21 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreatePhotoDto {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty()
-  readonly route: string;
-
   @IsNumber()
   @IsOptional()
   @ApiProperty()
   readonly state: number;
+
+  @IsPositive()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly publicationId: number;
+
+  @IsPositive()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly userId: number;
 }
 
 export class UpdatePhotoDto extends PartialType(CreatePhotoDto) {}

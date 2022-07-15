@@ -55,11 +55,7 @@ describe('Publications', () => {
   beforeEach(async () => {
     await usersService.create(user);
     for (const publication of initialPublications) {
-      await publicationsService.create(publication, [
-        {
-          path: 'files/publication_photo_1.png',
-        } as Express.Multer.File,
-      ]);
+      await publicationsService.create(publication);
     }
   });
 
@@ -102,9 +98,7 @@ describe('Publications', () => {
     it("It's possible with a valid publication", async () => {
       await request(app.getHttpServer())
         .post('/publications')
-        .attach('photos', file)
-        .field('description', 'New publication')
-        .field('userId', 1)
+        .send({ description: 'New publication', userId: 1 })
         .expect(201);
     });
 
@@ -113,6 +107,24 @@ describe('Publications', () => {
         .post('/publications')
         .field('description', 'New publication')
         .field('userId', 1)
+        .expect(400);
+    });
+
+    it('Upload photos', async () => {
+      await request(app.getHttpServer())
+        .post('/publications/upload-photos')
+        .attach('photos', file)
+        .attach('photos', file)
+        .field('userId', 1)
+        .field('publicationId', 1)
+        .expect(201);
+    });
+
+    it('Upload photos without a user', async () => {
+      await request(app.getHttpServer())
+        .post('/publications/upload-photos')
+        .attach('photos', file)
+        .field('publicationId', 1)
         .expect(400);
     });
   });
