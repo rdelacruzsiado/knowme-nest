@@ -1,8 +1,9 @@
 FROM node:16-alpine
+ENV NODE_ENV production
 WORKDIR /srv/app
-RUN npm install -g @nestjs/cli
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN chown -R node:node * .*
+RUN chown node:node /srv/app
+RUN npm install --location=global @nestjs/cli
+COPY --chown=node:node package*.json ./
+USER node
+RUN npm ci --only=production
 CMD ["npm", "run", "start:dev"]

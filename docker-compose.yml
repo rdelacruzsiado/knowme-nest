@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  app:
+  knowme_app:
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -18,11 +18,19 @@ services:
     environment:
       - TZ=$TIME_ZONE
     volumes:
-      - .:/srv/app
-      - /srv/app/node_modules
+      - ./src:/srv/app/src
+      - ./package.json:/srv/app/package.json
+      - ./package-lock.json:/srv/app/package-lock.json
+      - ./nest-cli.json:/srv/app/nest-cli.json
+      - ./tsconfig.build.json:/srv/app/tsconfig.build.json
+      - ./tsconfig.json:/srv/app/tsconfig.json
+      - ./.env.development:/srv/app/.env.development
+      - knowme-nest-node_modules:/srv/app/node_modules
+    depends_on:
+      - knowme_postgres
     links:
-      - postgres
-  postgres:
+      - knowme_postgres
+  knowme_postgres:
     image: postgres:13
     environment:
       - POSTGRES_DB=$TYPEORM_DATABASE
@@ -34,3 +42,4 @@ services:
       - postgres_data:/var/lib/postgresql/data
 volumes:
   postgres_data:
+  knowme-nest-node_modules:
